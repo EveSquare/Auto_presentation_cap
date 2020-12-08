@@ -8,13 +8,16 @@ import os
 
 main_img = 'Gomibako.jpg'
 exist_flag = True
+wait_time = 10
 #pg.locateCenterOnScreen('search.png',confidence=0.9)
-
-if pg.locateCenterOnScreen(main_img,confidence=0.9):
-    left, top, width, height = pg.locateOnScreen(main_img,confidence=0.9)
-else:
-    print("none")
-    exit(1)
+try:
+    if pg.locateCenterOnScreen(main_img,confidence=0.9):
+        left, top, width, height = pg.locateOnScreen(main_img,confidence=0.9)
+    else:
+        print("none")
+        exit(1)
+except:
+    print("元となるファイルが一致するところがありませんでした。")
 
 def f_date():
     now = dt.datetime.now()
@@ -46,17 +49,17 @@ try:
             not_changed_filename = f"./tmp_img/{tmp_img_name}.png"
             exist_flag = False
 
-        if ret > 0.99:
+        if ret > 0.98:
             # 画像が変わっていないということ
             print("not change")
-            time.sleep(1)
+            time.sleep(wait_time)
         else:
             print("changed")
             # 新しくtmp_img_nameを保存しmain_imgを更新
             tmp_img_name = f_date()
             ImageGrab.grab(bbox=(left, top, width, height)).save(f"./result/{tmp_img_name}.png")
             main_img = f"./result/{tmp_img_name}.png"
-            time.sleep(1)
+            time.sleep(wait_time)
 
 except KeyboardInterrupt:
     exit(1)
