@@ -9,35 +9,48 @@ main_img = 'Gomibako.jpg'
 #pg.locateCenterOnScreen('search.png',confidence=0.9)
 
 if pg.locateCenterOnScreen(main_img,confidence=0.9):
-    val = pg.locateCenterOnScreen(main_img,confidence=0.9)
-    result = re.findall(r"\d+", str(val))
-    x,y = result[0], result[1]
-    print(x + " : " + y)
+    left, top, width, height = pg.locateOnScreen(main_img,confidence=0.9)
 else:
     print("none")
-
-while True:
-    time.sleep(1)
-    # full screen
-    ImageGrab.grab().save(f"./tmp_img/{dt.datetime.now()}_full.png")
-
-    # 指定した領域内をクリッピング
-    tmp_img_name = f_date()
-    ImageGrab.grab(bbox=(x, x, y, y)).save(f"./tmp_img/{tmp_img_name}.png")
-
-    ret = cv2.compareHist(main_img, f"{tmp_img_name}.png", 0)
-
-    if ret > 0.99:
-        # 画像が変わっていないということ
-        print("match!!")
-    else:
-        print("not match..")
-        # 新しくtmp_img_nameを保存しmain_imgを更新
-    break
+    exit(1)
 
 def f_date():
     now = dt.datetime.now()
     return now.strftime("%m-%d-%H%M%S")
+
+try:
+    while True:
+        # full screen
+        # ImageGrab.grab().save(f"./tmp_img/{dt.datetime.now()}_full.png")
+
+        # 指定した領域内をクリッピング
+        tmp_img_name = f_date()
+        ImageGrab.grab(bbox=(left, top, width, height)).save(f"./tmp_img/{tmp_img_name}.png")
+
+        time.sleep(1)
+
+        main = cv2.imread(main_img)
+        main_hst = cv2.calcHist([main],[0],None,[256],[0,256])
+        temp = cv2.imread(f'./tmp_img/{tmp_img_name}.png')
+        temp_hst = cv2.calcHist([temp],[0],None,[256],[0,256])
+
+        #画像の一致度を判定
+        ret = cv2.compareHist(main_hst, temp_hst, 0)
+
+        if ret > 0.99:
+            # 画像が変わっていないということ
+            print("not change")
+            time.sleep(1)
+        else:
+            print("changed")
+            # 新しくtmp_img_nameを保存しmain_imgを更新
+            tmp_img_name = f_date()
+            ImageGrab.grab(bbox=(left, top, width, height)).save(f"./result/{tmp_img_name}.png")
+            main_img = f"./result/{tmp_img_name}.png"
+            time.sleep(1)
+
+except KeyboardInterrupt:
+    exit(1)
 
 
 # スクリーンショット取得
