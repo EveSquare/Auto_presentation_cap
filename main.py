@@ -63,8 +63,3 @@ try:
 
 except KeyboardInterrupt:
     exit(1)
-
-
-# スクリーンショット取得
-#     pyautogui.moveTo(600, 600)
-#     im = pyautogui.screenshot(region=(cBasePoint[0], cBasePoint[1], 410, 125))
