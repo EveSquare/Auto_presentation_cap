@@ -4,8 +4,10 @@ import pyautogui as pg
 import re
 import datetime as dt
 import cv2
+import os
 
 main_img = 'Gomibako.jpg'
+exist_flag = True
 #pg.locateCenterOnScreen('search.png',confidence=0.9)
 
 if pg.locateCenterOnScreen(main_img,confidence=0.9):
@@ -36,6 +38,13 @@ try:
 
         #画像の一致度を判定
         ret = cv2.compareHist(main_hst, temp_hst, 0)
+
+        if not exist_flag:
+            os.remove(not_changed_filename)
+            not_changed_filename = f"./tmp_img/{tmp_img_name}.png"
+        else:
+            not_changed_filename = f"./tmp_img/{tmp_img_name}.png"
+            exist_flag = False
 
         if ret > 0.99:
             # 画像が変わっていないということ
