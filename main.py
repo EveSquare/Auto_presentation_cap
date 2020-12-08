@@ -6,7 +6,7 @@ import datetime as dt
 import cv2
 import os
 
-main_img = 'Gomibako.jpg'
+main_img = os.listdir("./origin")[0]
 exist_flag = True
 wait_time = 10
 #pg.locateCenterOnScreen('search.png',confidence=0.9)
