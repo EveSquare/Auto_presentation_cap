@@ -6,9 +6,9 @@ import datetime as dt
 import cv2
 import os
 
-main_img = os.listdir("./origin")[0]
+main_img = f"./origin/{os.listdir('./origin')[0]}"
 exist_flag = True
-wait_time = 10
+wait_time = 5
 #pg.locateCenterOnScreen('search.png',confidence=0.9)
 try:
     if pg.locateCenterOnScreen(main_img,confidence=0.9):
@@ -35,12 +35,11 @@ try:
         time.sleep(1)
 
         main = cv2.imread(main_img)
-        main_hst = cv2.calcHist([main],[0],None,[256],[0,256])
         temp = cv2.imread(f'./tmp_img/{tmp_img_name}.png')
-        temp_hst = cv2.calcHist([temp],[0],None,[256],[0,256])
 
         #画像の一致度を判定
-        ret = cv2.compareHist(main_hst, temp_hst, 0)
+        ret = cv2.matchTemplate(main, temp, cv2.TM_CCORR_NORMED)
+        minVal, maxVal, minLoc, maxLoc = cv2.minMaxLoc(ret)
 
         if not exist_flag:
             os.remove(not_changed_filename)
@@ -49,7 +48,7 @@ try:
             not_changed_filename = f"./tmp_img/{tmp_img_name}.png"
             exist_flag = False
 
-        if ret > 0.98:
+        if maxVal > 0.99:
             # 画像が変わっていないということ
             print("not change")
             time.sleep(wait_time)
